@@ -54,8 +54,7 @@ M.select = function(config, items)
 
   	vim.api.nvim_buf_set_option(bufer, "swapfile", false)
   	vim.api.nvim_buf_set_option(bufer, "bufhidden", "wipe")
-	--local filetype = require 'filetype.teste'.resolve(items[1].filename)
-	--vim.api.nvim_buf_set_option(bufer, "filetype", filetype)
+	vim.api.nvim_buf_set_option(bufer, "filetype", "NiceReferenceBuffer")
 
   	local lines = {}
   	local max_width = 1
