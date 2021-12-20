@@ -114,8 +114,9 @@ local function getSelectedItem()
 end
 
 M.choose = function()
+	local item = getSelectedItem()
 	M.cancel()
-	on_choice(getSelectedItem())
+	on_choice(item)
 end
 
 M.preview = function()
