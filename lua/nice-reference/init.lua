@@ -39,17 +39,19 @@ M.references = function (context)
 	vim.lsp.buf_request(0, 'textDocument/references', params, M.reference_handler)
 end
 
-M.reference_handler = function(err, locations, ctx, _)
+M.reference_handler = function(err, result, ctx, _)
 	if err then
 		vim.notify('Error looking for references')
 		return
 	end
-	if not locations or vim.tbl_isempty(locations) then
+	if not result or vim.tbl_isempty(result) then
       	vim.notify('No reference found')
 		return
 	end
 
-	local items = util.locations_to_items(locations, ctx.bufnr)
+	local client = vim.lsp.get_client_by_id(ctx.client_id)
+
+	local items = util.locations_to_items(result, client.offset_encoding)
 
 	require 'nice-reference.selector'.select(config, items)
 end
