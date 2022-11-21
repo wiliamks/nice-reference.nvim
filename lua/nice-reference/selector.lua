@@ -2,6 +2,11 @@ local M = {}
 
 local vim = vim
 local util = require 'vim.lsp.util'
+local api = vim.api
+local uv = vim.loop
+
+local _items = {}
+local _encoding = nil
 
 local function on_choice(item)
 	if item == nil then
@@ -17,7 +22,7 @@ local function on_choice(item)
 			}
 		}
 	}
-	util.jump_to_location(location)
+	util.jump_to_location(location, _encoding)
 end
 
 local format_item = function(item, maxFilenameWidth, useIcons)
@@ -33,14 +38,13 @@ local format_item = function(item, maxFilenameWidth, useIcons)
 	end
 	local icon = ""
 	if useIcons then
-		icon = require'nvim-web-devicons'.get_icon(item.filename, item.filename:match([[/(\w+)$/]])) .. " "
+		icon = require 'nvim-web-devicons'.get_icon(item.filename, item.filename:match([[/(\w+)$/]])) .. " "
 	end
 	return icon .. fileName .. " | " .. line .. " " .. item.text:gsub("^%s*(.-)%s*$", "%1")
 end
 
-local _items = {}
 
-M.select = function(config, items)
+M.select = function(config, items, encoding)
 	if config.auto_choose and #items == 1 then
 		vim.notify("Only one reference found")
 		on_choice(items[1])
@@ -48,57 +52,58 @@ M.select = function(config, items)
 	end
 
 	local cword = vim.fn.expand('<cword>')
-  	_items = items
+	_items = items
+	_encoding = encoding
 
-  	local bufer = vim.api.nvim_create_buf(false, true)
+	local bufer = vim.api.nvim_create_buf(false, true)
 
-  	vim.api.nvim_buf_set_option(bufer, "swapfile", false)
-  	vim.api.nvim_buf_set_option(bufer, "bufhidden", "wipe")
+	vim.api.nvim_buf_set_option(bufer, "swapfile", false)
+	vim.api.nvim_buf_set_option(bufer, "bufhidden", "wipe")
 	vim.api.nvim_buf_set_option(bufer, "filetype", "NiceReferenceBuffer")
 
-  	local lines = {}
-  	local max_width = 1
+	local lines = {}
+	local max_width = 1
 	local max_filename_width = 0
 	for _, item in pairs(items) do
 		local croppedName = item.filename:match("([^/]+)$")
 		max_filename_width = math.max(max_filename_width, croppedName:len())
 	end
 	for _, item in ipairs(items) do
-    	local line = format_item(item, max_filename_width, config.use_icons)
-    	max_width = math.max(max_width, vim.api.nvim_strwidth(line))
-    	table.insert(lines, line)
-  	end
-  	local winopt = {
-    	relative = config.relative,
-    	anchor = config.anchor,
-    	row = config.row,
-    	col = config.col,
-    	border = config.border,
-    	width = math.min(max_width, config.max_width),
-    	height =  math.min(#lines, config.max_height),
-    	zindex = 150,
-    	style = "minimal",
-  	}
+		local line = format_item(item, max_filename_width, config.use_icons)
+		max_width = math.max(max_width, vim.api.nvim_strwidth(line))
+		table.insert(lines, line)
+	end
+	local winopt = {
+		relative = config.relative,
+		anchor = config.anchor,
+		row = config.row,
+		col = config.col,
+		border = config.border,
+		width = math.min(max_width, config.max_width),
+		height = math.min(#lines, config.max_height),
+		zindex = 150,
+		style = "minimal",
+	}
 
 	vim.api.nvim_buf_set_lines(bufer, 0, -1, true, lines)
 	vim.api.nvim_buf_set_option(bufer, "modifiable", false)
 
-  	local winnr = vim.api.nvim_open_win(bufer, true, winopt)
-  	vim.api.nvim_win_set_option(winnr, "winblend", config.winblend)
-  	vim.api.nvim_win_set_option(winnr, "cursorline", true)
+	local winnr = vim.api.nvim_open_win(bufer, true, winopt)
+	vim.api.nvim_win_set_option(winnr, "winblend", config.winblend)
+	vim.api.nvim_win_set_option(winnr, "cursorline", true)
 
-  	local function map(lhs, rhs)
-    	vim.api.nvim_buf_set_keymap(bufer, "n", lhs, rhs, { silent = true, noremap = true })
-  	end
+	local function map(key, command)
+		vim.keymap.set("n", key, command, { silent = true, noremap = true, buffer = bufer })
+	end
 
-  	map("<CR>", [[<cmd>lua require('nice-reference.selector').choose()<CR>]])
-  	map("<C-c>", [[<cmd>lua require('nice-reference.selector').cancel()<CR>]])
-	map("q", [[<cmd>lua require('nice-reference.selector').cancel()<CR>]])
-  	map("<Esc>", [[<cmd>lua require('nice-reference.selector').cancel()<CR>]])
-	map("p", [[<cmd>lua require('nice-reference.selector').preview()<CR>]])
+	map("<CR>", require('nice-reference.selector').choose)
+	map("<C-c>", require('nice-reference.selector').cancel)
+	map("q", require('nice-reference.selector').cancel)
+	map("<Esc>", require('nice-reference.selector').cancel)
+	map("p", require('nice-reference.selector').preview)
 
 	if config.use_icons then
-		local icon, color = require'nvim-web-devicons'.get_icon_color(items[1].filename, items[1].filename:match([[/(\w+)$/]]))
+		local icon, color = require 'nvim-web-devicons'.get_icon_color(items[1].filename, items[1].filename:match([[/(\w+)$/]]))
 		vim.cmd("hi def NiceReferenceIcon guifg=" .. color)
 		vim.cmd([[syn match NiceReferenceIcon "]] .. icon .. [["]])
 	end

@@ -49,11 +49,11 @@ M.reference_handler = function(err, result, ctx, _)
 		return
 	end
 
-	local client = vim.lsp.get_client_by_id(ctx.client_id)
+	local encoding = vim.lsp.get_client_by_id(ctx.client_id).offset_encoding
 
-	local items = util.locations_to_items(result, client.offset_encoding)
+	local items = util.locations_to_items(result, encoding)
 
-	require 'nice-reference.selector'.select(config, items)
+	require 'nice-reference.selector'.select(config, items, encoding)
 end
 
 
