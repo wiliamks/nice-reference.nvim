@@ -8,11 +8,11 @@ Requires neovim > 0.5.0, install it with your favorite plugin manager
 
 ```lua
 use { 
-    'wiliamks/nice-reference.nvim', 
-    requires = { 
-        'kyazdani42/nvim-web-devicons' --optional
-        { 'rmagatti/goto-preview', config = function() require('goto-preview').setup {} end } --optional
-    } 
+  'wiliamks/nice-reference.nvim', 
+  requires = { 
+    'kyazdani42/nvim-web-devicons' --optional
+    { 'rmagatti/goto-preview', config = function() require('goto-preview').setup {} end } --optional
+  } 
 }
 ```
 
@@ -28,25 +28,25 @@ This plugin doesn't require calling the setup function, so you just need to call
 #### Default configuration
 ```lua
 require 'nice-reference'.setup({
-    anchor = "NW", -- Popup position anchor
-    relative = "cursor", -- Popup relative position
-    row = 1, -- Popup x position
-    col = 0, -- Popup y position
-    border = "rounded", -- Popup borderstyle
-    winblend = 0, -- Popup transaparency 0-100, where 100 is transparent
-    max_width = 120, -- Max width of the popup
-    max_height = 10, -- Max height of the popup
-    auto_choose = false, -- Go to reference if there is only one
-	use_icons = pcall(require, 'nvim-web-devicons'), -- Checks whether nvim-web-devicons is istalled
-	mapping = {
-		['<CR>'] = actions.choose,
-		['<Esc>'] = actions.close,
-		['<C-c>'] = actions.close,
-		['q'] = actions.close,
-		['p'] = actions.preview,
-		['<Tab>'] = 'normal! j',
-		['<S-Tab>'] = 'normal! k'
-	}
+  anchor = "NW", -- Popup position anchor
+  relative = "cursor", -- Popup relative position
+  row = 1, -- Popup x position
+  col = 0, -- Popup y position
+  border = "rounded", -- Popup borderstyle
+  winblend = 0, -- Popup transaparency 0-100, where 100 is transparent
+  max_width = 120, -- Max width of the popup
+  max_height = 10, -- Max height of the popup
+  auto_choose = false, -- Go to reference if there is only one
+  use_icons = pcall(require, 'nvim-web-devicons'), -- Checks whether nvim-web-devicons is istalled
+  mapping = {
+  	['<CR>'] = actions.choose,
+  	['<Esc>'] = actions.close,
+  	['<C-c>'] = actions.close,
+  	['q'] = actions.close,
+  	['p'] = actions.preview,
+  	['<Tab>'] = 'normal! j',
+  	['<S-Tab>'] = 'normal! k'
+  }
 })
 ```
 
@@ -81,12 +81,12 @@ vim.lsp.handlers["textDocument/references"] = require 'nice-reference'.reference
 You can create custom commands on the setup using vim commands or lua functions. For example:
 ```lua
 require 'nice-reference'.setup({
-	mapping = {
-		['X'] = [[ echo 'X key pressed' ]],
-		['Y'] = function(item, encoding)
-			print('Y key pressed')
-		end
-	}
+  mapping = {
+    ['X'] = [[ echo 'X key pressed' ]],
+    ['Y'] = function(item, encoding)
+      print('Y key pressed')
+    end
+  }
 })
 ```
 if you are using a lua function it will call it with two parameters, ```item``` and ```encoding```.
