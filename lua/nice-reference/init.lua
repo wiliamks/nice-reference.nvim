@@ -1,5 +1,6 @@
 local vim = vim
 local util = require 'vim.lsp.util'
+local actions = require 'nice-reference.actions'
 
 local M = {}
 
@@ -13,25 +14,23 @@ local config = {
     max_width = 120,
     max_height = 10,
 	auto_choose = false,
-	use_icons = pcall(require, 'nvim-web-devicons')
+	use_icons = pcall(require, 'nvim-web-devicons'),
+	mapping = {
+		['<CR>'] = actions.choose,
+		['<Esc>'] = actions.close,
+		['<C-c>'] = actions.close,
+		['q'] = actions.close,
+		['p'] = actions.preview,
+		['<Tab>'] = 'normal! j',
+		['<S-Tab>'] = 'normal! k'
+	}
 }
 
 M.setup = function(opts)
-	config.anchor = opts.anchor or config.anchor
-	config.relative = opts.relative or config.relative
-	config.row = opts.row or config.row
-	config.col = opts.col or config.col
-	config.border = opts.border or config.border
-	config.winblend = opts.winblend or config.winblend
-	config.max_width = opts.max_width or config.max_width
-	config.max_height = opts.max_height or config.max_height
-	config.auto_choose = opts.auto_choose or config.auto_choose
-
-	local ok = pcall(require, 'nvim-web-devicons')
-	config.use_icons = ok
+	config = vim.tbl_deep_extend('force', {}, config, opts or {})
 end
 
-M.references = function (context)
+M.references = function(context)
 	local params = util.make_position_params()
   	params.context = context or {
     	includeDeclaration = true;

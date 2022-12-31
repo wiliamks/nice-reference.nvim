@@ -3,7 +3,7 @@ A small neovim plugin to see LSP references in a popup window under the cursor.
 
 ![screenshot](screenshots/screenshot.png)
 
-## Install
+## Installation
 Requires neovim > 0.5.0, install it with your favorite plugin manager
 
 ```lua
@@ -18,14 +18,14 @@ use {
 
 #### Optional dependencies
 [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icons
-require('goto-preview').setup {}
 
 [goto-preview](https://github.com/rmagatti/goto-preview) - For previewing in a floating window
 
 ## Setup
 
-This plugin doesn't require calling the setup function, so you just need to call it if you wanto to customize it.
+This plugin doesn't require calling the setup function, so you just need to call it if you want to customize it.
 
+#### Default configuration
 ```lua
 require 'nice-reference'.setup({
     anchor = "NW", -- Popup position anchor
@@ -37,6 +37,16 @@ require 'nice-reference'.setup({
     max_width = 120, -- Max width of the popup
     max_height = 10, -- Max height of the popup
     auto_choose = false, -- Go to reference if there is only one
+	use_icons = pcall(require, 'nvim-web-devicons'), -- Checks whether nvim-web-devicons is istalled
+	mapping = {
+		['<CR>'] = actions.choose,
+		['<Esc>'] = actions.close,
+		['<C-c>'] = actions.close,
+		['q'] = actions.close,
+		['p'] = actions.preview,
+		['<Tab>'] = 'normal! j',
+		['<S-Tab>'] = 'normal! k'
+	}
 })
 ```
 
@@ -47,7 +57,7 @@ nnoremap <silent> gr <cmd>NiceReference<CR>
 
 Or the lua function
 ```lua
-vim.api.nvim_set_keymap("n", "gr", "<cmd>lua require('nice-reference').references()<CR>")
+vim.keymap.set("n", "gr", require 'nice-reference'.references)
 ```
 
 or you can just use a handler instead
@@ -55,7 +65,7 @@ or you can just use a handler instead
 vim.lsp.handlers["textDocument/references"] = require 'nice-reference'.reference_handler
 ```
 
-### Mappings on the popup
+### Default mappings on the popup
 
 | key    | function                                                      |
 |--------|---------------------------------------------------------------|
@@ -64,3 +74,28 @@ vim.lsp.handlers["textDocument/references"] = require 'nice-reference'.reference
 | q      | Exits the popup                                               |
 | Ctrl+c | Exits the popup                                               |
 | p      | Preview reference in a floating window(requires goto-preview) |
+| Tab    | Move cursor down one line                                     |
+| S-Tab  | Move cursor up one line                                       |
+
+#### Custom keybindins
+You can create custom commands on the setup using vim commands or lua functions. For example:
+```lua
+require 'nice-reference'.setup({
+	mapping = {
+		['X'] = [[ echo 'X key pressed' ]],
+		['Y'] = function(item, encoding)
+			print('Y key pressed')
+		end
+	}
+})
+```
+if you are using a lua function it will call it with two parameters, ```item``` and ```encoding```.
+Item will be formated like this:
+```lua
+{
+  col = 7,
+  filename = "nice-reference.nvim/lua/nice-reference/init.lua",
+  lnum = 7,
+  text = "local config = {"
+}
+```
