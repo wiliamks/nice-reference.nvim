@@ -95,7 +95,7 @@ require 'nice-reference'.setup({
   }
 })
 ```
-if you are using a lua function it will call it with three parameters, ```items``` ```current_item``` and ```encoding```.
+if you are using a lua function it will call it with three parameters, ```items```, ```current_item``` and ```encoding```.
 Item will be formated like this:
 ```lua
 {
