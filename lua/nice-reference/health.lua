@@ -20,6 +20,12 @@ local function is_plugin_installed(plugin_name)
 end
 
 health.check = function()
+	local lsp_clients = vim.lsp.buf_get_clients(0)
+
+	if lsp_clients == nil or #lsp_clients < 1 then
+		report.warn("No LSP client found for the current file, nice-reference won't work")
+	end
+
 	report.start("Checking optional plugins")
 
     for _, plugin in pairs(optional_plugins) do
@@ -31,13 +37,6 @@ health.check = function()
             report.info("nvim-web-devicons not installed, icons won't be showed")
         end
     end
-
-	local lsp_clients = vim.lsp.buf_get_clients(0)
-
-    if lsp_clients == nil or #lsp_clients < 1 then
-		report.warn("No LSP client found for the current file, nice-reference won't work")
-    end
-
 end
 
 return health
