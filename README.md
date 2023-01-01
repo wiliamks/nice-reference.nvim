@@ -27,6 +27,8 @@ This plugin doesn't require calling the setup function, so you just need to call
 
 #### Default configuration
 ```lua
+local actions = require 'nvim-reference.actions'
+
 require 'nice-reference'.setup({
   anchor = "NW", -- Popup position anchor
   relative = "cursor", -- Popup relative position
@@ -36,7 +38,7 @@ require 'nice-reference'.setup({
   winblend = 0, -- Popup transaparency 0-100, where 100 is transparent
   max_width = 120, -- Max width of the popup
   max_height = 10, -- Max height of the popup
-  auto_choose = false, -- Go to reference if there is only one
+  auto_choose = false, -- If true go to reference if there is only one
   use_icons = pcall(require, 'nvim-web-devicons'), -- Checks whether nvim-web-devicons is istalled
   mapping = {
   	['<CR>'] = actions.choose,
@@ -44,6 +46,8 @@ require 'nice-reference'.setup({
   	['<C-c>'] = actions.close,
   	['q'] = actions.close,
   	['p'] = actions.preview,
+	['t'] = actions.open_on_new_tab,
+	['<C-q>'] = actions.move_to_quick_fix,
   	['<Tab>'] = 'normal! j',
   	['<S-Tab>'] = 'normal! k'
   }
@@ -71,9 +75,11 @@ vim.lsp.handlers["textDocument/references"] = require 'nice-reference'.reference
 |--------|---------------------------------------------------------------|
 | Enter  | Go to reference under the cursor                              |
 | Escape | Exits the popup                                               |
-| q      | Exits the popup                                               |
 | Ctrl+c | Exits the popup                                               |
+| q      | Exits the popup                                               |
 | p      | Preview reference in a floating window(requires goto-preview) |
+| t      | Open reference under the cursor in a new tab                  |
+| Ctrl+q | Moves all items to quick fix window                           |
 | Tab    | Move cursor down one line                                     |
 | S-Tab  | Move cursor up one line                                       |
 
@@ -83,13 +89,13 @@ You can create custom commands on the setup using vim commands or lua functions.
 require 'nice-reference'.setup({
   mapping = {
     ['X'] = [[ echo 'X key pressed' ]],
-    ['Y'] = function(item, encoding)
+    ['Y'] = function(items, current_item, encoding)
       print('Y key pressed')
     end
   }
 })
 ```
-if you are using a lua function it will call it with two parameters, ```item``` and ```encoding```.
+if you are using a lua function it will call it with three parameters, ```items``` ```current_item``` and ```encoding```.
 Item will be formated like this:
 ```lua
 {

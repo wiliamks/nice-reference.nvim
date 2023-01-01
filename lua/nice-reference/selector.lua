@@ -79,7 +79,7 @@ M.select = function(config, items, encoding)
 			key,
 			function()
 				if type(command) == "function" then
-					command(getSelectedItem(), encoding)
+					command(items, getSelectedItem(), encoding)
 				elseif type(command) == "string" then
 					vim.cmd(command)
 				else

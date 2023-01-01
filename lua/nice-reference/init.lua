@@ -5,14 +5,14 @@ local actions = require 'nice-reference.actions'
 local M = {}
 
 local config = {
-    anchor = "NW",
-    relative = "cursor",
-    row = 1,
-    col = 0,
-    border = "rounded",
-    winblend = 0,
-    max_width = 120,
-    max_height = 10,
+	anchor = "NW",
+	relative = "cursor",
+	row = 1,
+	col = 0,
+	border = "rounded",
+	winblend = 0,
+	max_width = 120,
+	max_height = 10,
 	auto_choose = false,
 	use_icons = pcall(require, 'nvim-web-devicons'),
 	mapping = {
@@ -21,6 +21,8 @@ local config = {
 		['<C-c>'] = actions.close,
 		['q'] = actions.close,
 		['p'] = actions.preview,
+		['t'] = actions.open_on_new_tab,
+		['<C-q>'] = actions.move_to_quick_fix,
 		['<Tab>'] = 'normal! j',
 		['<S-Tab>'] = 'normal! k'
 	}
@@ -32,9 +34,9 @@ end
 
 M.references = function(context)
 	local params = util.make_position_params()
-  	params.context = context or {
-    	includeDeclaration = true;
-  	}
+	params.context = context or {
+		includeDeclaration = true;
+	}
 	vim.lsp.buf_request(0, 'textDocument/references', params, M.reference_handler)
 end
 
@@ -44,7 +46,7 @@ M.reference_handler = function(err, result, ctx, _)
 		return
 	end
 	if not result or vim.tbl_isempty(result) then
-      	vim.notify('No reference found')
+		vim.notify('No reference found')
 		return
 	end
 
@@ -55,5 +57,30 @@ M.reference_handler = function(err, result, ctx, _)
 	require 'nice-reference.selector'.select(config, items, encoding)
 end
 
+M.definition = function(context)
+	local params = util.make_position_params()
+	params.context = context
+	vim.lsp.buf_request(0, 'textDocument/definition', params, M.definition_handler)
+end
+
+M.definition_handler = function(err, result, ctx, _)
+	if err then
+		vim.notify('Error looking for definition')
+		return
+	end
+	if result == nil or not result or vim.tbl_isempty(result) then
+		vim.notify('No definition found')
+		return
+	end
+	local encoding = vim.lsp.get_client_by_id(ctx.client_id).offset_encoding
+
+	if vim.tbl_islist(result) and #result > 1 then
+		local items = util.locations_to_items(result, encoding)
+
+		require 'nice-reference.selector'.select(config, items, encoding)
+	else
+		util.jump_to_location(result, encoding)
+	end
+end
 
 return M

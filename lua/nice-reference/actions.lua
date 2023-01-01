@@ -1,6 +1,7 @@
 local M = {}
 
 local vim = vim
+local api = vim.api
 local util = require 'vim.lsp.util'
 
 M.on_choice = function(item, encoding)
@@ -21,17 +22,16 @@ M.on_choice = function(item, encoding)
 	util.jump_to_location(location, encoding)
 end
 
-M.close = function(item, _)
-	print(vim.inspect(item))
+M.close = function(_, _, _)
 	vim.api.nvim_win_close(0, true)
 end
 
-M.choose = function(item, encoding)
+M.choose = function(_, item, encoding)
 	M.close()
 	M.on_choice(item, encoding)
 end
 
-M.preview = function(item, _)
+M.preview = function(_, item, _)
 	local ok, lib = pcall(require, 'goto-preview.lib')
 	if ok then
 		M.cancel()
@@ -39,6 +39,19 @@ M.preview = function(item, _)
 	else
 		vim.notify("goto-preview not installed")
 	end
+end
+
+M.move_to_quick_fix = function(items, _, _)
+	M.close()
+	local title = 'References'
+	vim.fn.setloclist(0, {}, ' ', { title = title, items = items })
+    api.nvim_command('lopen')
+end
+
+M.open_on_new_tab = function(_, item, encoding)
+	M.close()
+	vim.cmd('tabedit')
+	M.on_choice(item, encoding)
 end
 
 return M
