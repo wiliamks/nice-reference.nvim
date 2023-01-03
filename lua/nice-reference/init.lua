@@ -22,9 +22,11 @@ local config = {
 		['q'] = actions.close,
 		['p'] = actions.preview,
 		['t'] = actions.open_on_new_tab,
+		['s'] = actions.open_split,
+		['v'] = actions.open_vsplit,
 		['<C-q>'] = actions.move_to_quick_fix,
-		['<Tab>'] = 'normal! j',
-		['<S-Tab>'] = 'normal! k'
+		['<Tab>'] = actions.next,
+		['<S-Tab>'] = actions.previous
 	}
 }
 

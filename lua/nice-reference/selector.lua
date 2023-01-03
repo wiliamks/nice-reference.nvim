@@ -24,7 +24,7 @@ end
 M.select = function(config, items, encoding)
 	if config.auto_choose and #items == 1 then
 		vim.notify("Only one reference found")
-		require 'nice-reference.actions'.on_choice(items[1], encoding)
+		require 'nice-reference.actions'.jump(items[1], encoding)
 		return
 	end
 

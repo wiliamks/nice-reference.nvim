@@ -18,7 +18,6 @@ use {
 
 #### Optional dependencies
 [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icons
-
 [goto-preview](https://github.com/rmagatti/goto-preview) - For previewing in a floating window
 
 ## Setup
@@ -42,14 +41,16 @@ require 'nice-reference'.setup({
   use_icons = pcall(require, 'nvim-web-devicons'), -- Checks whether nvim-web-devicons is istalled
   mapping = {
   	['<CR>'] = actions.choose,
-  	['<Esc>'] = actions.close,
-  	['<C-c>'] = actions.close,
-  	['q'] = actions.close,
-  	['p'] = actions.preview,
+	['<Esc>'] = actions.close,
+	['<C-c>'] = actions.close,
+	['q'] = actions.close,
+	['p'] = actions.preview,
 	['t'] = actions.open_on_new_tab,
+	['s'] = actions.open_split,
+	['v'] = actions.open_vsplit,
 	['<C-q>'] = actions.move_to_quick_fix,
-  	['<Tab>'] = 'normal! j',
-  	['<S-Tab>'] = 'normal! k'
+	['<Tab>'] = actions.next,
+	['<S-Tab>'] = actions.previous
   }
 })
 ```
@@ -79,6 +80,8 @@ vim.lsp.handlers["textDocument/references"] = require 'nice-reference'.reference
 | q      | Exits the popup                                               |
 | p      | Preview reference in a floating window(requires goto-preview) |
 | t      | Open reference under the cursor in a new tab                  |
+| s      | Open reference under the cursor in a horizontal split         |
+| v      | Open reference under the cursor in a vertical split           |
 | Ctrl+q | Moves all items to quick fix window                           |
 | Tab    | Move cursor down one line                                     |
 | S-Tab  | Move cursor up one line                                       |
@@ -88,7 +91,7 @@ You can create custom commands on the setup using vim commands or lua functions.
 ```lua
 require 'nice-reference'.setup({
   mapping = {
-    ['X'] = [[ echo 'X key pressed' ]],
+    ['X'] = "echo 'X key pressed'",
     ['Y'] = function(items, current_item, encoding)
       print('Y key pressed')
     end

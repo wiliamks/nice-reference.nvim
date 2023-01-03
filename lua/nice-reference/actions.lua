@@ -4,7 +4,7 @@ local vim = vim
 local api = vim.api
 local util = require 'vim.lsp.util'
 
-M.on_choice = function(item, encoding)
+M.jump = function(item, encoding)
 	if item == nil then
 		return
 	end
@@ -28,7 +28,7 @@ end
 
 M.choose = function(_, item, encoding)
 	M.close()
-	M.on_choice(item, encoding)
+	M.jump(item, encoding)
 end
 
 M.preview = function(_, item, _)
@@ -51,7 +51,27 @@ end
 M.open_on_new_tab = function(_, item, encoding)
 	M.close()
 	vim.cmd('tabedit')
-	M.on_choice(item, encoding)
+	M.jump(item, encoding)
+end
+
+M.open_vsplit = function(_, item, encoding)
+	M.close()
+	vim.cmd('vsplit')
+	M.jump(item, encoding)
+end
+
+M.open_split = function(_, item, encoding)
+	M.close()
+	vim.cmd('split')
+	M.jump(item, encoding)
+end
+
+M.next = function(_, _, _)
+	vim.cmd('normal! j')
+end
+
+M.previous = function(_, _, _)
+	vim.cmd('normal! k')
 end
 
 return M
