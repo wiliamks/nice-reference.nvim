@@ -17,8 +17,8 @@ use {
 ```
 
 #### Optional dependencies
-[nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icons
-[goto-preview](https://github.com/rmagatti/goto-preview) - For previewing in a floating window
+- [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icons
+- [goto-preview](https://github.com/rmagatti/goto-preview) - For previewing in a floating window
 
 ## Setup
 

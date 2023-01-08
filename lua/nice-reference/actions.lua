@@ -34,7 +34,7 @@ end
 M.preview = function(_, item, _)
 	local ok, lib = pcall(require, 'goto-preview.lib')
 	if ok then
-		M.cancel()
+		M.close()
 		lib.open_floating_win('file://' .. item.filename, { item.lnum, item.col - 1 })
 	else
 		vim.notify("goto-preview not installed")
