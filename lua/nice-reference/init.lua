@@ -76,10 +76,14 @@ M.definition_handler = function(err, result, ctx, _)
 	end
 	local encoding = vim.lsp.get_client_by_id(ctx.client_id).offset_encoding
 
-	if vim.tbl_islist(result) and #result > 1 then
-		local items = util.locations_to_items(result, encoding)
+	if vim.tbl_islist(result) then
+		if #result == 1 then
+			util.jump_to_location(result[1], encoding)
+		else
+			local items = util.locations_to_items(result, encoding)
 
-		require 'nice-reference.selector'.select(config, items, encoding)
+			require 'nice-reference.selector'.select(config, items, encoding)
+		end
 	else
 		util.jump_to_location(result, encoding)
 	end
