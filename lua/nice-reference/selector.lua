@@ -102,6 +102,13 @@ M.select = function(config, items, encoding)
 
 	vim.cmd("hi def NiceReferenceItemName gui=bold")
 	vim.cmd([[syn match NiceReferenceItemName "]] .. cword .. [["]])
+
+	vim.api.nvim_create_autocmd("BufLeave", {
+		buffer = bufer,
+		callback = function()
+			vim.api.nvim_win_close(winnr, true)
+		end
+	})
 end
 
 return M
