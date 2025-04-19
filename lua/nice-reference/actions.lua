@@ -19,7 +19,7 @@ M.jump = function(item, encoding)
 		}
 	}
 
-	util.jump_to_location(location, encoding)
+	util.show_document(location, encoding, { focus = true })
 end
 
 M.close = function(_, _, _)
